@@ -1,0 +1,155 @@
+module tb_safe_clock_gated_dsp;
+
+    // ------------------------------------------------
+    // Testbench signals
+    // ------------------------------------------------
+
+    reg clk;
+    reg reset;
+    reg enable;
+    reg [7:0] data_in;
+
+    wire [7:0] original_out;
+    wire [7:0] safe_out;
+    wire unsafe_clk;
+
+
+    // ------------------------------------------------
+    // Instantiate Top Module
+    // ------------------------------------------------
+
+    dsp_top DUT (
+
+        .clk         (clk),
+        .reset       (reset),
+        .enable      (enable),
+        .data_in     (data_in),
+
+        .original_out(original_out),
+        .safe_out    (safe_out),
+        .unsafe_clk  (unsafe_clk)
+
+    );
+
+
+    // ------------------------------------------------
+    // Clock Generation
+    // 10 ns clock period
+    // ------------------------------------------------
+
+    initial begin
+
+        clk = 1'b0;
+
+        forever #5 clk = ~clk;
+
+    end
+
+
+    // ------------------------------------------------
+    // Test Sequence
+    // ------------------------------------------------
+
+    initial begin
+
+        // Initial values
+        reset   = 1'b1;
+        enable  = 1'b0;
+        data_in = 8'd0;
+
+
+        // Reset
+        #20;
+
+        reset = 1'b0;
+
+
+        // ============================================
+        // ACTIVE MODE 1
+        // ============================================
+
+        enable  = 1'b1;
+        data_in = 8'd10;
+        #10;
+
+        data_in = 8'd20;
+        #10;
+
+        data_in = 8'd30;
+        #10;
+
+        data_in = 8'd40;
+        #10;
+
+        data_in = 8'd50;
+        #10;
+
+        data_in = 8'd60;
+        #10;
+
+
+        // ============================================
+        // IDLE MODE 1
+        // ============================================
+
+        enable  = 1'b0;
+        data_in = 8'd60;
+
+        #80;
+
+
+        // ============================================
+        // ACTIVE MODE 2
+        // ============================================
+
+        enable  = 1'b1;
+
+        data_in = 8'd70;
+        #10;
+
+        data_in = 8'd80;
+        #10;
+
+        data_in = 8'd90;
+        #10;
+
+        data_in = 8'd100;
+        #10;
+
+
+        // ============================================
+        // IDLE MODE 2
+        // ============================================
+
+        enable  = 1'b0;
+        data_in = 8'd100;
+
+        #40;
+
+
+        // Finish simulation
+        $finish;
+
+    end
+
+
+    // ------------------------------------------------
+    // Display values in console
+    // ------------------------------------------------
+
+    initial begin
+
+        $monitor(
+            "Time=%0t | Reset=%b | Enable=%b | Data=%d | Original=%d | Safe=%d | Unsafe_CLK=%b",
+            $time,
+            reset,
+            enable,
+            data_in,
+            original_out,
+            safe_out,
+            unsafe_clk
+        );
+
+    end
+
+endmodule
