@@ -1,0 +1,54 @@
+module dsp_top (
+    input        clk,
+    input        reset,
+    input        enable,
+    input  [7:0] data_in,
+
+    output [7:0] original_out,
+    output [7:0] safe_out,
+
+    output unsafe_clk
+);
+
+    // ------------------------------------------------
+    // Original DSP
+    // ------------------------------------------------
+
+    dsp_block_original U_ORIGINAL (
+
+        .clk      (clk),
+        .reset    (reset),
+        .data_in  (data_in),
+        .data_out (original_out)
+
+    );
+
+
+    // ------------------------------------------------
+    // Safe Clock-Enable DSP
+    // ------------------------------------------------
+
+    safe_clock_gating U_SAFE (
+
+        .clk      (clk),
+        .reset    (reset),
+        .enable   (enable),
+        .data_in  (data_in),
+        .data_out (safe_out)
+
+    );
+
+
+    // ------------------------------------------------
+    // Unsafe Clock-Gating Demonstration
+    // ------------------------------------------------
+
+    unsafe_clock_gating U_UNSAFE (
+
+        .clk       (clk),
+        .enable    (enable),
+        .gated_clk (unsafe_clk)
+
+    );
+
+endmodule
