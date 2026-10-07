@@ -1,0 +1,11 @@
+module unsafe_clock_gating (
+    input  clk,
+    input  enable,
+
+    output gated_clk
+);
+
+    // UNSAFE clock gating
+    assign gated_clk = clk & enable;
+
+endmodule
