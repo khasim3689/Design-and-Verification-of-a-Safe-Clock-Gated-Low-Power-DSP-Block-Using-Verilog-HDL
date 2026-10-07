@@ -1,0 +1,1 @@
+# Design-and-Verification-of-a-Safe-Clock-Gated-Low-Power-DSP-Block-Using-Verilog-HDL
