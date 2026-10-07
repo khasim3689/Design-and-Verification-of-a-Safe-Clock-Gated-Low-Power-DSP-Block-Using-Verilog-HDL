@@ -1,0 +1,29 @@
+module dsp_block_original (
+    input        clk,
+    input        reset,
+    input  [7:0] data_in,
+
+    output reg [7:0] data_out
+);
+
+    reg [7:0] stage1;
+    reg [7:0] stage2;
+
+    always @(posedge clk or posedge reset) begin
+
+        if (reset) begin
+            stage1   <= 8'd0;
+            stage2   <= 8'd0;
+            data_out <= 8'd0;
+        end
+
+        else begin
+            // DSP processing
+            stage1   <= data_in + 8'd1;
+            stage2   <= stage1 << 1;
+            data_out <= stage2;
+        end
+
+    end
+
+endmodule
